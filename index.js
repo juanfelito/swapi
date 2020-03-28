@@ -4,9 +4,9 @@ const RunAPI = async () => {
     const apiData = await RequestData('https://swapi.co/api/films/')
 
     if (apiData.count && apiData.count > 0) {
-        apiData.results.forEach(movie => {
-            PrintMovieInformation(movie)
-        })
+        for (const movie of apiData.results) {
+            await PrintMovieInformation(movie)
+        }
     } else {
         console.log("There was an error or there are zero movies available")
     }
@@ -34,32 +34,26 @@ const PrintMovieInformation = (movie) => {
     return new Promise(async (resolve) => {
         console.log(`Name: ${movie.title}`)
         console.log('Planets:')
-        planetInfo = await ProcessPlanets(movie.planets)
-        console.log(planetInfo)
+        await ProcessPlanets(movie.planets)
+        console.log('Characters:')
         await ProcessCharacters(movie.characters)
         resolve()
     })
 }
 
 const ProcessPlanets = (planetUrls) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         if (planetUrls.length > 0) {
-            let data = ''
-            let counter = 0
-            planetUrls.forEach(async (planetUrl) => {
+            for (const planetUrl of planetUrls) {
                 const planetData = await RequestData(planetUrl)
-                data += `\tName: ${planetData.name}\n`
-                data += `\tName: ${planetData.name}\n`
-                data += `\tTerrain: ${planetData.terrain}\n`
-                data += `\tGravity: ${planetData.gravity}\n`
-                data += `\tDiameter: ${planetData.diameter}\n`
-                data += `\tPopulation: ${planetData.population}\n\n`
-                counter++
-            })
-
-            if (counter === planetUrls.length) {
-                resolve(data)
+                console.log(`\tName: ${planetData.name}`)
+                console.log(`\tTerrain: ${planetData.terrain}`)
+                console.log(`\tGravity: ${planetData.gravity}`)
+                console.log(`\tDiameter: ${planetData.diameter}`)
+                console.log(`\tPopulation: ${planetData.population}`)
+                console.log('')                
             }
+            resolve()
         } else {
             reject()
         }
@@ -67,9 +61,9 @@ const ProcessPlanets = (planetUrls) => {
 }
 
 const ProcessCharacters = (characterUrls) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         if (characterUrls.length > 0) {
-            characterUrls.forEach(async (characterUrl) => {
+            for (const characterUrl of characterUrls) {
                 const characterData = await RequestData(characterUrl)
                 console.log(`\tName: ${characterData.name}`)
                 console.log(`\tGender: ${characterData.gender}`)
@@ -79,7 +73,7 @@ const ProcessCharacters = (characterUrls) => {
                 console.log(`\tHeight: ${characterData.height}`)
                 console.log(`\tHomeworld: ${characterData.homeworld}`)
                 console.log('')
-            })
+            }
             resolve()
         } else {
             reject()
